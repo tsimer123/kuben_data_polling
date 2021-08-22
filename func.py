@@ -39,9 +39,9 @@ def resolve_name_file(dir_excel, type_ivk):  # функция получения
     return path_name
 
 
-#
 def open_excel(name_file):  # функция получения сырого массива из файла
 
+    # НАДО ДОБАВИТЬ ИСКЛЮЧЕНИЯ ЕСЛИ ФАЙЛА НЕТ
     wb = load_workbook(filename=name_file, read_only=True)
     ws = wb['Лист1']
     # массив для данных из excel
@@ -59,3 +59,82 @@ def open_excel(name_file):  # функция получения сырого м�
 
     # вернуть массив
     return mass_excel
+
+
+def first_del_empty_str(data_excel):   # удаляем первые пустые строки и заголовок
+
+    i = 0
+    while i < 1:
+        if data_excel[0][0] is None:
+           del data_excel[0]
+        else:
+            del data_excel[0]
+            i = 1
+
+    return data_excel
+
+
+def del_old_pu(data_excel, start_building):   # удаляются строки с ПУ старше даты из start_building
+
+    i = 0
+    for str in data_excel:
+        if data_excel[i][15] is None:
+            del data_excel[i]
+        else:
+            if data_excel[i][15] < start_building:
+                del data_excel[i]
+            else:
+                i += 1
+
+    return data_excel
+
+
+def del_alien_pu(data_excel, list_type_pu):   # удаляем чужие ПУ
+
+    i = 0
+    for str in data_excel:
+        type_pu_in_mass = data_excel[i][11]
+        # удаление строки без типа ПУ
+        if data_excel[i][11] is None:
+            del data_excel[i]
+
+        # првоверка соответствия типа ПУ с заданными
+        trigger_del = 0
+        for type_pu in list_type_pu:
+            if type_pu_in_mass[0:2] != type_pu:
+                trigger_del += 1
+
+        #  провека размера тригера чужих пу если он меньше размера списка типов то удаляем
+        if trigger_del == len(list_type_pu):
+            del data_excel[i]
+        else:
+            i += 1
+
+    return data_excel
+
+
+def off_status_pu(data_excel, str_type_off_status):   # удаление строк исключенных из стартистики сбора "Не учит."
+
+    i = 0
+    for str in data_excel:
+        status_in_mass = data_excel[i][19]
+        if status_in_mass == str_type_off_status:
+            del data_excel[i]
+        else:
+            i += 1
+
+    return data_excel
+
+
+def del_name_fider(data_excel, list_del_name_fider):
+
+    i = 0
+    for str in data_excel:
+        name_fider_in_mass = data_excel[i][4]
+        for name_fider in list_del_name_fider:
+            if name_fider_in_mass.find(name_fider) != -1:
+                data_excel[i][4] =name_fider_in_mass.replace(name_fider, '')
+            else:
+                i += 1
+
+    return data_excel
