@@ -179,3 +179,43 @@ def save_data_excel_in_wb(data_excel):
     wb.save("output.xlsx")
 
     return data_excel
+
+
+def count_pu_in_feeder(data_excel):
+
+    i = 0
+    name_feeder = []
+    count_pu = []
+    while i < len(data_excel):
+        try:
+            index_feeder = name_feeder.index(data_excel[i][4])
+        except ValueError:
+            index_feeder = "not element"
+
+        if index_feeder == "not element":
+            if data_excel[i][10] is not None:
+                name_feeder.append(data_excel[i][4])
+                count_pu.append(1)
+        if index_feeder != "not element":
+            if data_excel[i][10] is not None:
+                count_pu[index_feeder] += 1
+
+        # учет пустых ПУ на фидерах
+
+        if data_excel[i][10] is None:
+
+            try:
+                index_feeder_none = name_feeder.index('Нет № ПУ')
+            except ValueError:
+                index_feeder_none = "not element"
+
+            if index_feeder_none == "not element":
+                name_feeder.append('Нет № ПУ')
+                count_pu.append(1)
+            if index_feeder_none != "not element":
+                count_pu[index_feeder_none] += 1
+        i += 1
+
+    feeder_count_pu = [name_feeder, count_pu]
+
+    return feeder_count_pu
